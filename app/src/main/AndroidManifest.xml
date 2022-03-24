@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Practice_Room_Database">
         <activity
+            android:name=".EditNoteActivity"
+            android:exported="false" />
+        <activity
             android:name=".NewNoteActivity"
             android:exported="false" />
         <activity
