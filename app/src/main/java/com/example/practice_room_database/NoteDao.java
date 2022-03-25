@@ -2,6 +2,7 @@ package com.example.practice_room_database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -22,4 +23,7 @@ public interface NoteDao {
 
     @Update
     void update(Note note);
+
+    @Delete
+    int delete(Note note);
 }

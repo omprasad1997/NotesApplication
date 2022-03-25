@@ -15,33 +15,40 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteViewHolder> {
-   private final LayoutInflater layoutInflater;
+
+    public interface OnDeleteClickListener{
+        void OnDeleteClickListener(Note myNote);
+    }
+
+    private final LayoutInflater layoutInflater;
     private Context mContext;
     private List<Note> mNotes;
+    private OnDeleteClickListener onDeleteClickListener;
 
-    public NoteListAdapter(Context context) {
+    public NoteListAdapter(Context context, OnDeleteClickListener listener) {
         layoutInflater = LayoutInflater.from(context);
         mContext = context;
+        this.onDeleteClickListener = listener;
     }
 
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = layoutInflater.inflate(R.layout.list_item,parent,false);
+        View itemView = layoutInflater.inflate(R.layout.list_item, parent, false);
         NoteViewHolder viewHolder = new NoteViewHolder(itemView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(NoteViewHolder holder, int position) {
-            if(mNotes != null){
-                Note note = mNotes.get(position);
-                holder.setData(note.getNote(),position);
-                holder.setListeners();
-            } else {
-                //Covers the case of data not being ready yet
-                holder.noteItemView.setText(R.string.no_note);
-            }
+        if (mNotes != null) {
+            Note note = mNotes.get(position);
+            holder.setData(note.getNote(), position);
+            holder.setListeners();
+        } else {
+            //Covers the case of data not being ready yet
+            holder.noteItemView.setText(R.string.no_note);
+        }
     }
 
     @Override
@@ -51,7 +58,7 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
         else return 0;
     }
 
-    public void setNotes(List<Note> notes){
+    public void setNotes(List<Note> notes) {
         mNotes = notes;
         notifyDataSetChanged();
     }
@@ -64,11 +71,11 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
             noteItemView = itemView.findViewById(R.id.txvNote);
-            imageDelete  = itemView.findViewById(R.id.ivRowDelete);
-            imageEdit    = itemView.findViewById(R.id.ivRowEdit);
+            imageDelete = itemView.findViewById(R.id.ivRowDelete);
+            imageEdit = itemView.findViewById(R.id.ivRowEdit);
         }
 
-        public void setData(String note, int position){
+        public void setData(String note, int position) {
             noteItemView.setText(note);
             mPosition = position;
         }
@@ -79,8 +86,17 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, EditNoteActivity.class);
-                    intent.putExtra("note_id",mNotes.get(mPosition).getId());
-                    ((Activity)mContext).startActivityForResult(intent, MainActivity.UPDATE_NOTE_ACTIVITY_REQUEST_CODE);
+                    intent.putExtra("note_id", mNotes.get(mPosition).getId());
+                    ((Activity) mContext).startActivityForResult(intent, MainActivity.UPDATE_NOTE_ACTIVITY_REQUEST_CODE);
+                }
+            });
+
+            imageDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(onDeleteClickListener != null){
+                        onDeleteClickListener.OnDeleteClickListener(mNotes.get(mPosition));
+                    }
                 }
             });
         }
